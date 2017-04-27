@@ -18,7 +18,7 @@
     <div class="col-sm-8 col-sm-offset-2 ">
         <table  class="table table-striped">
                 <tr class="active">
-                    <th>Nombre</th>
+                    <th>Nombre completo</th>
                     <th>Sucursal</th>
                     <th>Entrada</th>
                     <th>Salida</th>
