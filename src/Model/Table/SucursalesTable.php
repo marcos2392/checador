@@ -61,4 +61,9 @@ class SucursalesTable extends Table
 
         return $validator;
     }
+
+    public static function defaultConnectionName()
+    {
+        return 'admin';
+    }
 }

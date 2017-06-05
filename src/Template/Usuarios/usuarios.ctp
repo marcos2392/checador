@@ -7,7 +7,6 @@
                 <tr class="active">
                     <th>#</th>
                     <th>Nombre</th>
-                    <th>ID</th>
                     <th>Sucursal</th>
                     <th>Tipo Usuario</th>
                     <th colspan="2"></th>
@@ -15,21 +14,20 @@
 
                 <?php 
                 $contador=1;
-                foreach ($usuarios as $usuario):
-                $tipo=($usuario->admin)? "Admin" : ""; ?>
+                foreach ($user as $usr):
+                $tipo=($usr["usuario"]->admin)? "Admin" : ""; ?>
                     <tr>
                         <td><?= $contador ?></td>
-                        <td><?= $usuario->nombre ?></td>
-                        <td><b><?= $usuario->id ?></b></td>
-                        <td><?= $usuario->sucursal->nombre ?></td>
+                        <td><?= $usr["usuario"]->nombre ?></td>
+                        <td><b><?= $usr["sucursal"] ?></b></td>
+                        
                         <td><?= $tipo ?></td>
-                        <td><?= $this->Html->link('Editar', ['action' => 'editar', 'id' => $usuario->id]) ?></td>
-                        <td><?= $this->Html->link('Eliminar', ['action' => 'eliminar', 'id' => $usuario->id]) ?></td>
+                        <td><?= $this->Html->link('Editar', ['action' => 'editar', 'id' => $usr["usuario"]->id]) ?></td>
+                        <td><?= $this->Html->link('Eliminar', ['action' => 'eliminar', 'id' => $usr["usuario"]->id]) ?></td>
                     </tr>
                 <?php
                     $contador++;
                 endforeach; ?>
-                
         </table>
     </div>
 </div>

@@ -73,18 +73,16 @@
                     <li><?= $this->Html->link('Checar', ['controller' =>'Principal','action' => 'inicio']); ?></li>
                     <li><?= $this->Html->link('Reportes', ['controller' =>'Reportes','action' => 'semanal']); ?></li> 
                 </ul> 
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administracion<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <?php if ($usuario->admin): ?>
-                                <li><?= $this->Html->link('Sucursales', ['controller' =>'Sucursales','action' => 'sucursales']); ?></li>
+                <?php if ($usuario->admin): ?>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administracion<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
                                 <li><?= $this->Html->link('Usuarios', ['controller' =>'Usuarios','action' => 'usuarios']); ?></li>
-                            <?php endif; ?>
-                            <li><?= $this->Html->link('Empleados', ['controller' =>'Empleados','action' => 'empleados']); ?></li>
-                        </ul>
-                    </li>
-                </ul>
+                            </ul>
+                        </li>
+                    </ul>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>

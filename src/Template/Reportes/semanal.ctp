@@ -74,7 +74,7 @@
                 <?php
                 foreach($registro as $id=>$reg): ?>
                     <tr>
-                        <td colspan="3"><?= $reg[0]->empleado->ncompleto ?></td>
+                        <td colspan="3"><?= $reg["empleado"] ?></td>
                         <?php 
                         $contador=false;
                         $retardos=0;
@@ -88,7 +88,7 @@
                             $entrada="";
                             $salida="";
 
-                            foreach($reg as $r):
+                            foreach($reg["checadas"] as $r):
                                 if($contador==false)
                                 {
                                     if($r->retardo): $retardos++; endif;

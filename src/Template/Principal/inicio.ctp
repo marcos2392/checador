@@ -4,11 +4,11 @@
         <div class="form-group col-md-offset-3">
         <?= $this->Form->label('id', 'Empleado: ', ['class' => 'col-md-2 control-label']) ?>
             <div class="col-md-3">
-                <?= $this->Form->select('id', $this->Select->options($empleados, 'id', 'nombre', ['blank' => ['' => '--Seleccionar--']]), ['value' => $empleados, 'class' => 'form-control']) ?>
+                <?= $this->Form->select('id', $this->Select->options($empleados, 'id', 'ncompleto', ['blank' => ['' => '--Seleccionar--']]), ['value' => $empleados, 'class' => 'form-control']) ?>
             </div>
         </div>
         <div class=" col-md-1">
-            <?= $this->Form->submit('Entrada', ['class' => 'btn btn-info']) ?>
+            <?= $this->Form->submit('Checar', ['class' => 'btn btn-info']) ?>
         </div>
     </div>
 

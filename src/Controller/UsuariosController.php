@@ -41,10 +41,26 @@ class UsuariosController extends AppController
 
     public function usuarios() {
         
-        $usuarios=$this->Usuarios->find()
-        ->contain(['Sucursales']);
+        //$usuarios=$this->Usuarios->find()
+        //->contain(['Sucursales']);
+        $user=[];
 
-        $this->set(compact('usuarios'));
+        $usuarios=$this->Usuarios->find();
+        foreach($usuarios as $s)
+        {
+            $sucursales=$this->Sucursales->find()
+            ->where(['id'=>$s->sucursal_id]);
+
+            foreach($sucursales as $sucursal)
+            {
+                $user[$s->id]=[];
+                $user[$s->id]["usuario"]=$s;
+                $user[$s->id]["sucursal"]=$sucursal->nombre;
+            }
+        }
+        
+
+        $this->set(compact('usuarios','user'));
     }
 
     public function nuevo() {

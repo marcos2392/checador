@@ -85,4 +85,9 @@ class EmpleadosTable extends Table
 
         return $validator;
     }
+
+    public static function defaultConnectionName()
+    {
+        return 'admin';
+    }
 }

@@ -58,7 +58,7 @@ class ReportesController extends AppController
         if ($this->request->is('post')) {
             $registros=$this->Checadas->find()
             ->where($condicion)
-            ->contain('Empleados')
+            //->contain('Empleados')
             ->order('empleados_id, fecha,checadas.entrada');
 
             $registro=[];
@@ -68,17 +68,22 @@ class ReportesController extends AppController
                 if(!isset($registro[$reg->empleados_id]))
                 {
                     $registro[$reg->empleados_id]=[];
-                    $registro[$reg->empleados_id][]=$reg;
                 }
-                else
+                
+                $empleados=$this->Empleados->find()
+                ->where(['id'=>$reg->empleados_id]);
+
+                foreach($empleados as $empleado)
                 {
-                    $registro[$reg->empleados_id][]=$reg;
+                    $registro[$reg->empleados_id]["checadas"][]=$reg;
+                    $registro[$reg->empleados_id]["empleado"]=$empleado->nombre;
                 }
+                
             }
 
             if(empty($registro)): $this->Flash->default('No se encontraron registros.'); endif;   
         }
 
-        $this->set(compact('inicio','fin','registro','filtro','sucursales','sucursal','sucursal_nombre'));
+        $this->set(compact('inicio','fin','registro','filtro','sucursales','sucursal','sucursal_nombre','empleados'));
     }
 }

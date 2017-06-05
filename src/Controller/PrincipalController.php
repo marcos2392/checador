@@ -84,7 +84,16 @@ class PrincipalController extends AppController
                     else
                     {
                         $tolerancia=5;
-                        $segundos_hora=strtotime($empleado->entrada->format("H:i"));
+
+                        if($empleado->horario_mixto==true)
+                        {
+                            $segundos_hora=strtotime($this->getentrada($empleado,"entrada")->format("H:i"));
+                        }
+                        else
+                        {
+                            $segundos_hora=strtotime($empleado->entrada->format("H:i"));
+                        }
+                        
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia);
 
@@ -92,7 +101,7 @@ class PrincipalController extends AppController
                         $hora_tolerancia = strtotime($hora_tolerancia);
 
                         if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                        $hora_ent=($retardo==false)? $hora_ent=$empleado->entrada : $hora;
+                        $hora_ent=($retardo==false)? $hora_ent=$this->getentrada($empleado,"entrada") : $hora;
                     }
 
                     $checar = $this->Checadas->newEntity();
@@ -119,16 +128,15 @@ class PrincipalController extends AppController
         {
             if ($checada_existente->entrada!=null and $checada_existente->salida==null) 
             {
-                $connection = ConnectionManager::get('default');
-
                 $registro = $this->Checadas->get($checada_existente->id);
 
                 if($empleado->tipo_extra!=2)
                 {
-                    $salida_empleado=strtotime($empleado->salida->format("H:i"));
+                    $salida=$this->getentrada($empleado,"salida")->format("H:i");
+                    $salida_empleado=strtotime($salida);
                     $hora1 = strtotime($hora);
 
-                    $hora=($hora1 > $salida_empleado)? $empleado->salida->format("H:i") : $hora;
+                    $hora=($hora1 > $salida_empleado)? $salida : $hora;
                 }
 
                 $horas_trabajadas= $this->getcalcular($hora,$checada_existente->entrada->format("H:i"));
@@ -146,6 +154,8 @@ class PrincipalController extends AppController
                 $checar->empleados_id = $id;
                 $checar->entrada = $hora;
                 $checar->fecha=$fecha;
+                $checar->dia = $dia;
+                $checar->sucursal = $empleado->sucursal_id;
                 $this->Checadas->save($checar);
 
                 $this->Flash->default("Se Checo exitosamente.");
@@ -176,18 +186,74 @@ class PrincipalController extends AppController
         $separar[1]=explode(':',$hora1); 
         $separar[2]=explode(':',$hora2); 
 
-        $horas=$separar[1][0]-$separar[2][0];
-
         $total_minutos_transcurridos[1] = ($separar[1][0]*60)+$separar[1][1]; 
-        $total_minutos_transcurridos[2] = ($separar[2][0]*60)+$separar[2][1]; 
+        $total_minutos_transcurridos[2] = ($separar[2][0]*60)+$separar[2][1];
         $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2]; 
-        if($total_minutos_transcurridos<=59) return('00:'.$total_minutos_transcurridos); 
-        elseif($total_minutos_transcurridos>59){ 
-        if($horas<=9) $horas='0'.$horas; 
-        $minutos = $total_minutos_transcurridos%60; 
-        if($minutos<=9) $minutos='0'.$minutos; 
-        return ($horas.':'.$minutos);
 
+        $total_minutos_transcurridos=$total_minutos_transcurridos/60; 
+        $horas=floor($total_minutos_transcurridos);
+        $minutos=($total_minutos_transcurridos*60)%60;
+
+        if($horas<=9)
+        {
+            $horas='0'.$horas; 
         } 
+        if($minutos<=9)
+        {
+           $minutos='0'.$minutos;
+        } 
+        
+        return ($horas.':'.$minutos);
+ 
     } 
+
+    private function getEntrada($empleado,$tipo) { 
+        
+        $dia = date('l', strtotime(date('Y-m-d')));
+        if($dia=="Monday")
+        {
+            $entrada=$empleado->lunes_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+        if($dia=="Tuesday")
+        {
+            $entrada=$empleado->martes_entrada;
+            $salida=$empleado->martes_salida;
+        }
+        if($dia=="Wednesday")
+        {
+            $entrada=$empleado->miercoles_entrada;
+            $salida=$empleado->miercoles_salida;
+        }
+        if($dia=="Thursday")
+        {
+            $entrada=$empleado->jueves_entrada;
+            $salida=$empleado->jueves_salida;
+        }
+        if($dia=="Friday")
+        {
+            $entrada=$empleado->viernes_entrada;
+            $salida=$empleado->viernes_salida;
+        }
+        if($dia=="Saturday")
+        {
+            $entrada=$empleado->sabado_entrada;
+            $salida=$empleado->sabado_salida;
+        }
+        if($dia=="Sunday")
+        {
+            $entrada=$empleado->domingo_entrada;
+            $salida=$empleado->domingo_salida;
+        }
+
+        if($tipo=="entrada")
+        {
+            return $entrada;
+        }
+        else
+        {
+           return $salida; 
+        }
+        
+    }
 }

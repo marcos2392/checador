@@ -63,7 +63,7 @@ class SucursalesController extends AppController
             $this->Sucursales->save($sucursal);
 
             $this->Flash->default("Se creó la Sucursal: ".$nombre." , Exitosamente.");
-            $this->redirect(['action' => 'sucursales']); 
+            $this->redirect(['action' => 'sucursales']);
         }
     }
 

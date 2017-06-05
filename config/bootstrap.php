@@ -267,3 +267,4 @@ function getDia() {
     }
     return $dia;
 }
+
