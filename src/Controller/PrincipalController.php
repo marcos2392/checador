@@ -27,7 +27,7 @@ class PrincipalController extends AppController
     	$empleados=$this->Empleados->find()
     	->contain(['sucursales'])
     	->where(['sucursal_id'=>$usuario->sucursal_id])
-        ->order('nombre');
+        ->order(['empleados.nombre']);
 
         $checadas=$this->Checadas->find()
         ->where(["DATE_FORMAT(fecha, '%Y-%m-%d')='". $fecha ."' and descanso<>1"]);
