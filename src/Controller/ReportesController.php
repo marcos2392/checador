@@ -76,7 +76,7 @@ class ReportesController extends AppController
                 foreach($empleados as $empleado)
                 {
                     $registro[$reg->empleados_id]["checadas"][]=$reg;
-                    $registro[$reg->empleados_id]["empleado"]=$empleado->nombre;
+                    $registro[$reg->empleados_id]["empleado"]=$empleado->ncompleto;
                 }
                 
             }
