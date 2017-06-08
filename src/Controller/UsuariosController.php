@@ -195,7 +195,7 @@ class UsuariosController extends AppController
         $empleados=$this->Empleados->find();
         
         foreach($empleados as $empleado)
-        {
+        { 
             $checadas=$this->Checadas->find()
             ->where(['empleados_id'=>$empleado->id,'fecha'=>$fecha]);
 
@@ -204,7 +204,7 @@ class UsuariosController extends AppController
                 if($empleado->descanso==$dia)
                 {
                     if($empleado->dia_extra!=$dia)
-                    {
+                    { 
                         $registrar=true;
                     }
                 }

@@ -63,8 +63,8 @@ class PrincipalController extends AppController
 
         if(empty($checada_existente))
         { 
-            if($empleado->sucursal_id==$usuario->sucursal_id)
-            {
+            if($empleado->sucursal_id==$usuario->sucursal_id) 
+            { 
                 if($empleado->descanso==$dia)
                 {
                     if($empleado->dia_extra==$dia and $empleado->tipo_extra==3):$registrar=true; else: $this->Flash->success("Este empleado descansa.Cualquier cosa comuniquese con algun administrador.");
@@ -83,7 +83,7 @@ class PrincipalController extends AppController
                     }
                     else
                     {
-                        $tolerancia=5;
+                        $tolerancia=5; 
 
                         if($empleado->horario_mixto==true)
                         {
@@ -95,10 +95,10 @@ class PrincipalController extends AppController
                         }
                         
                         $segundos_tolerancia=$tolerancia*60;
-                        $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia);
+                        $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
 
                         $hora1 = strtotime($hora);
-                        $hora_tolerancia = strtotime($hora_tolerancia);
+                        $hora_tolerancia = strtotime($hora_tolerancia); 
 
                         if($hora1 > $hora_tolerancia): $retardo=true; endif;
                         $hora_ent=($retardo==false)? $hora_ent=$this->getentrada($empleado,"entrada") : $hora;
@@ -148,7 +148,7 @@ class PrincipalController extends AppController
 
                 $this->redirect(['action' => 'inicio']);
             }
-            else /*if($checada_existente->salida!=null) */
+            else
             {
                 $checar = $this->Checadas->newEntity();
                 $checar->empleados_id = $id;
@@ -254,6 +254,8 @@ class PrincipalController extends AppController
         {
            return $salida; 
         }
+
+        
         
     }
 }
