@@ -88,7 +88,7 @@ class PrincipalController extends AppController
 
                         if($empleado->horario_mixto==true)
                         {
-                            $segundos_hora=strtotime($this->getentrada($empleado,"entrada")->format("H:i"));
+                            $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
                         }
                         else
                         {
@@ -102,7 +102,7 @@ class PrincipalController extends AppController
                         $hora_tolerancia = strtotime($hora_tolerancia); 
 
                         if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                        $hora_ent=($retardo==false)? $hora_ent=$this->getentrada($empleado,"entrada") : $hora;
+                        $hora_ent=($retardo==false)? $hora_ent=$this->gethorario($empleado,"entrada") : $hora;
                     }
 
                     $checar = $this->Checadas->newEntity();
@@ -133,14 +133,21 @@ class PrincipalController extends AppController
 
                 if($empleado->tipo_extra!=2)
                 {
-                    $salida=$this->getentrada($empleado,"salida")->format("H:i");
+                    if($empleado->horario_mixto==true)
+                    {
+                        $salida=$this->gethorario($empleado,"salida")->format("H:i");
+                    }
+                    else
+                    {
+                        $salida=$empleado->salida->format("H:i");
+                    } 
                     $salida_empleado=strtotime($salida);
                     $hora1 = strtotime($hora);
 
                     $hora=($hora1 > $salida_empleado)? $salida : $hora;
                 }
 
-                $horas_trabajadas= $this->getcalcular($hora,$checada_existente->entrada->format("H:i"));
+                $horas_trabajadas= $this->getcalcular($hora,$checada_existente->entrada->format("H:i")); 
 
                 $registro->salida = $hora;
                 $registro->horas = $horas_trabajadas;
@@ -190,7 +197,7 @@ class PrincipalController extends AppController
         return $hora ;
     }
 
-    private function getCalcular($hora1,$hora2){ 
+    private function getCalcular($hora1,$hora2){  
 
         $separar[1]=explode(':',$hora1); 
         $separar[2]=explode(':',$hora2); 
@@ -216,7 +223,7 @@ class PrincipalController extends AppController
  
     } 
 
-    private function getEntrada($empleado,$tipo) { 
+    private function getHorario($empleado,$tipo) { 
         
         $dia = date('l', strtotime(date('Y-m-d')));
         if($dia=="Monday")
