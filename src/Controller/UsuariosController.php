@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Datasource\ConnectionManager;
+use Cake\Log\Log;
 
 /**
  * Reportes Controller
@@ -237,7 +238,7 @@ class UsuariosController extends AppController
 
     private function faltas(){
 
-        $fecha=date('Y-m-d', strtotime('-1 day'));
+        $fecha=date('Y-m-d', strtotime('-1 day')); //Log::write("debug",$segundos_hora);  
         $dia=getdia();
         $dia=($dia==1)? 7 : $dia-1;
 
@@ -263,7 +264,7 @@ class UsuariosController extends AppController
                 {
                     $checar->falta=true;
                 }
-                
+
                 $checar->sucursal=$empleado->sucursal_id;
 
                 $this->Checadas->save($checar);
