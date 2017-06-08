@@ -255,16 +255,7 @@ class UsuariosController extends AppController
                 $checar->empleados_id = $empleado->id;
                 $checar->fecha = $fecha;
                 $checar->dia = $dia;
-
-                if($empleado->descanso==$dia)
-                {
-                    $checar->descanso=true;
-                }
-                else
-                {
-                    $checar->falta=true;
-                }
-
+                $checar->falta=true;
                 $checar->sucursal=$empleado->sucursal_id;
 
                 $this->Checadas->save($checar);
