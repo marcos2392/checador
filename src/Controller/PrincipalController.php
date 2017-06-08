@@ -99,10 +99,10 @@ class PrincipalController extends AppController
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
 
                         $hora1 = strtotime($hora);
-                        $hora_tolerancia = strtotime($hora_tolerancia); 
+                        $hora_tolerancia = strtotime($hora_tolerancia);
 
                         if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                        $hora_ent=($retardo==false)? $hora_ent=$this->gethorario($empleado,"entrada") : $hora;
+                        $hora_ent=($retardo==false)? $hora_ent=$empleado->entrada : $hora;
                     }
 
                     $checar = $this->Checadas->newEntity();
