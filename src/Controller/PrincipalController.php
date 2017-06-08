@@ -150,16 +150,24 @@ class PrincipalController extends AppController
             }
             else
             {
-                $checar = $this->Checadas->newEntity();
-                $checar->empleados_id = $id;
-                $checar->entrada = $hora;
-                $checar->fecha=$fecha;
-                $checar->dia = $dia;
-                $checar->sucursal = $empleado->sucursal_id;
-                $this->Checadas->save($checar);
+                if($checada_existente->descanso==true)
+                {
+                    $this->Flash->success("Este empleado descansa.Cualquier cosa comuniquese con algun administrador.");
+                    $this->redirect(['action' => 'inicio']);
+                }
+                else
+                {
+                    $checar = $this->Checadas->newEntity();
+                    $checar->empleados_id = $id;
+                    $checar->entrada = $hora;
+                    $checar->fecha=$fecha;
+                    $checar->dia = $dia;
+                    $checar->sucursal = $empleado->sucursal_id;
+                    $this->Checadas->save($checar);
 
-                $this->Flash->default("Se Checo exitosamente.");
-                $this->redirect(['action' => 'inicio']);
+                    $this->Flash->default("Se Checo exitosamente.");
+                    $this->redirect(['action' => 'inicio']);
+                }
             }
         }
     }
