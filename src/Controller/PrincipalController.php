@@ -89,9 +89,11 @@ class PrincipalController extends AppController
                         if($empleado->horario_mixto==true)
                         {
                             $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
+                            $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
                         }
                         else
                         {
+                            $entrada=$empleado->entrada;
                             $segundos_hora=strtotime($empleado->entrada->format("H:i"));
                         }
                         
@@ -102,7 +104,7 @@ class PrincipalController extends AppController
                         $hora_tolerancia = strtotime($hora_tolerancia);
 
                         if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                        $hora_ent=($retardo==false)? $hora_ent=$empleado->entrada : $hora;
+                        $hora_ent=($retardo==false)? $entrada : $hora;
                     }
 
                     $checar = $this->Checadas->newEntity();
