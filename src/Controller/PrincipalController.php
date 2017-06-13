@@ -90,12 +90,17 @@ class PrincipalController extends AppController
                         {
                             $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
                             $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
+                            $salida=$this->gethorario($empleado,"salida")->format("H:i");
                         }
                         else
                         {
                             $entrada=$empleado->entrada;
+                            $salida=$empleado->salida;
                             $segundos_hora=strtotime($empleado->entrada->format("H:i"));
                         }
+
+                        $entrada_horario=$entrada;
+                        $salida_horario=$salida;
                         
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
@@ -113,6 +118,8 @@ class PrincipalController extends AppController
                     $checar->entrada = $hora_ent;
                     $checar->retardo = $retardo;
                     $checar->dia = $dia;
+                    $checar->entrada_horario=$entrada_horario;
+                    $checar->salida_horario=$salida_horario;
                     $checar->sucursal = $empleado->sucursal_id;
 
                     $this->Checadas->save($checar);
