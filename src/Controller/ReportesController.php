@@ -58,7 +58,6 @@ class ReportesController extends AppController
         if ($this->request->is('post')) {
             $registros=$this->Checadas->find()
             ->where($condicion)
-            //->contain('Empleados')
             ->order('empleados_id, fecha,checadas.entrada');
 
             $registro=[];
