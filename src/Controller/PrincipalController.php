@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Datasource\ConnectionManager;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Log\Log;
 
 /**
  * Reportes Controller
@@ -100,7 +101,7 @@ class PrincipalController extends AppController
                         }
 
                         $entrada_horario=$entrada;
-                        $salida_horario=$salida;
+                        $salida_horario=$salida; Log::write("debug",$salida_horario); Log::write("debug",$entrada_horario);
                         
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
