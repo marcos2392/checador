@@ -101,7 +101,9 @@ class PrincipalController extends AppController
                         }
 
                         $entrada_horario=$entrada;
-                        $salida_horario=$salida; Log::write("debug",$salida_horario); Log::write("debug",$entrada_horario);
+                        $salida_horario=$salida; 
+
+                        $hrs_dia=$this->getcalcular($salida_horario,$entrada_horario,true);
                         
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
@@ -121,6 +123,7 @@ class PrincipalController extends AppController
                     $checar->dia = $dia;
                     $checar->entrada_horario=$entrada_horario;
                     $checar->salida_horario=$salida_horario;
+                    $checar->hrs_dia=$hrs_dia;
                     $checar->sucursal = $empleado->sucursal_id;
 
                     $this->Checadas->save($checar);
@@ -157,7 +160,7 @@ class PrincipalController extends AppController
                     $hora=($hora1 > $salida_empleado)? $salida : $hora;
                 }
 
-                $horas_trabajadas= $this->getcalcular($hora,$checada_existente->entrada->format("H:i")); 
+                $horas_trabajadas= $this->getcalcular($hora,$checada_existente->entrada->format("H:i"),false); 
 
                 $registro->salida = $hora;
                 $registro->horas = $horas_trabajadas;
@@ -207,7 +210,7 @@ class PrincipalController extends AppController
         return $hora ;
     }
 
-    private function getCalcular($hora1,$hora2){  
+    private function getCalcular($hora1,$hora2,$hrs_dia){  
 
         $separar[1]=explode(':',$hora1); 
         $separar[2]=explode(':',$hora2); 
@@ -217,19 +220,27 @@ class PrincipalController extends AppController
         $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2]; 
 
         $total_minutos_transcurridos=$total_minutos_transcurridos/60; 
-        $horas=floor($total_minutos_transcurridos);
+        $hrs=floor($total_minutos_transcurridos);
         $minutos=($total_minutos_transcurridos*60)%60;
 
-        if($horas<=9)
-        {
-            $horas='0'.$horas; 
-        } 
-        if($minutos<=9)
-        {
-           $minutos='0'.$minutos;
-        } 
         
-        return ($horas.':'.$minutos);
+        if($hrs_dia==false)
+        {
+            if($hrs<=9)
+            {
+                $hrs='0'.$hrs;
+            } 
+            if($minutos<=9)
+            {
+               $minutos='0'.$minutos;
+            } 
+
+            return ($hrs.':'.$minutos);
+        }
+        else
+        {
+            return ($hrs+$minutos/60);
+        }
  
     } 
 
