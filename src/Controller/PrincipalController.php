@@ -27,7 +27,7 @@ class PrincipalController extends AppController
 
     	$empleados=$this->Empleados->find()
     	->contain(['sucursales'])
-    	->where(['sucursal_id'=>$usuario->sucursal_id])
+    	->where(['sucursal_id'=>$usuario->sucursal_id,'status'=>true])
         ->order(['empleados.nombre']);
 
         $checadas=$this->Checadas->find()
