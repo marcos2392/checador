@@ -238,27 +238,38 @@ class UsuariosController extends AppController
 
     private function faltas(){
 
-        $fecha=date('Y-m-d', strtotime('-1 day')); //Log::write("debug",$segundos_hora);  
+        $fecha=date('Y-m-d', strtotime('-1 day')); 
         $dia=getdia();
         $dia=($dia==1)? 7 : $dia-1;
 
         $empleados=$this->Empleados->find();
         
-        foreach($empleados as $empleado)
+        foreach($empleados as $empleado) 
         {
-            $checadas=$this->Checadas->find()
-            ->where(['empleados_id'=>$empleado->id,'fecha'=>$fecha]);
-
-            if($checadas->isEmpty())
+            $entrada=$this->gethorario($dia,$empleado,"entrada");
+            
+            if($entrada!=null)
             {
-                $checar = $this->Checadas->newEntity();
-                $checar->empleados_id = $empleado->id;
-                $checar->fecha = $fecha;
-                $checar->dia = $dia;
-                $checar->falta=true;
-                $checar->sucursal=$empleado->sucursal_id;
+                $checadas=$this->Checadas->find()
+                ->where(['empleados_id'=>$empleado->id,'fecha'=>$fecha]);
 
-                $this->Checadas->save($checar);
+                if($checadas->isEmpty())
+                {
+                    $salida=$this->gethorario($dia,$empleado,"salida");
+                    $hrs_dia=getcalcular($salida,$entrada,true);
+
+                    $checar = $this->Checadas->newEntity();
+                    $checar->empleados_id = $empleado->id;
+                    $checar->fecha = $fecha;
+                    $checar->dia = $dia;
+                    $checar->falta=true;
+                    $checar->sucursal=$empleado->sucursal_id;
+                    $checar->entrada_horario=$entrada;
+                    $checar->salida_horario=$salida;
+                    $checar->hrs_dia=$hrs_dia;
+
+                    $this->Checadas->save($checar);
+                }
             }
         }
     }
@@ -277,6 +288,61 @@ class UsuariosController extends AppController
             $borrar_extra->tipo_extra=0;
 
             $this->Empleados->save($borrar_extra);
+        }
+    }
+
+    private function getHorario($dia,$empleado,$tipo) { 
+        
+        if($dia==1)
+        {
+            $entrada=$empleado->lunes_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+        if($dia==2)
+        {
+            $entrada=$empleado->martes_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+        if($dia==3)
+        {
+            $entrada=$empleado->miercoles_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+        if($dia==4)
+        {
+            $entrada=$empleado->jueves_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+        if($dia==5)
+        {
+            $entrada=$empleado->viernes_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+        if($dia==6)
+        {
+            $entrada=$empleado->sabado_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+        if($dia==7)
+        {
+            $entrada=$empleado->domingo_entrada;
+            $salida=$empleado->lunes_salida;
+        }
+
+        if($tipo=="entrada")
+        {
+            if($entrada!=null)
+            {
+                return $entrada->format("H:i");
+            }
+            else
+            {
+                return $entrada;
+            }
+        }
+        else
+        {
+            return $salida->format("H:i");
         }
     }
 }

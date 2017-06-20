@@ -87,23 +87,14 @@ class PrincipalController extends AppController
                     {
                         $tolerancia=5; 
 
-                        if($empleado->horario_mixto==true)
-                        {
-                            $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
-                            $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
-                            $salida=$this->gethorario($empleado,"salida")->format("H:i");
-                        }
-                        else
-                        {
-                            $entrada=$empleado->entrada;
-                            $salida=$empleado->salida;
-                            $segundos_hora=strtotime($empleado->entrada->format("H:i"));
-                        }
-
+                        $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
+                        $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
+                        $salida=$this->gethorario($empleado,"salida")->format("H:i");
+                        
                         $entrada_horario=$entrada;
                         $salida_horario=$salida; 
 
-                        $hrs_dia=$this->getcalcular($salida_horario,$entrada_horario,true);
+                        $hrs_dia=getcalcular($salida_horario,$entrada_horario,true);
                         
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
@@ -146,21 +137,16 @@ class PrincipalController extends AppController
 
                 if($empleado->tipo_extra!=2)
                 {
-                    if($empleado->horario_mixto==true)
-                    {
-                        $salida=$this->gethorario($empleado,"salida")->format("H:i");
-                    }
-                    else
-                    {
-                        $salida=$empleado->salida->format("H:i");
-                    } 
+                    
+                    $salida=$this->gethorario($empleado,"salida")->format("H:i");
+                    
                     $salida_empleado=strtotime($salida);
                     $hora1 = strtotime($hora);
 
                     $hora=($hora1 > $salida_empleado)? $salida : $hora;
                 }
 
-                $horas_trabajadas= $this->getcalcular($hora,$checada_existente->entrada->format("H:i"),false); 
+                $horas_trabajadas= getcalcular($hora,$checada_existente->entrada->format("H:i"),false); 
 
                 $registro->salida = $hora;
                 $registro->horas = $horas_trabajadas;
@@ -209,40 +195,6 @@ class PrincipalController extends AppController
         $hora = date('H:i');
         return $hora ;
     }
-
-    private function getCalcular($hora1,$hora2,$hrs_dia){  
-
-        $separar[1]=explode(':',$hora1); 
-        $separar[2]=explode(':',$hora2); 
-
-        $total_minutos_transcurridos[1] = ($separar[1][0]*60)+$separar[1][1]; 
-        $total_minutos_transcurridos[2] = ($separar[2][0]*60)+$separar[2][1];
-        $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2]; 
-
-        $total_minutos_transcurridos=$total_minutos_transcurridos/60; 
-        $hrs=floor($total_minutos_transcurridos);
-        $minutos=($total_minutos_transcurridos*60)%60;
-
-        
-        if($hrs_dia==false)
-        {
-            if($hrs<=9)
-            {
-                $hrs='0'.$hrs;
-            } 
-            if($minutos<=9)
-            {
-               $minutos='0'.$minutos;
-            } 
-
-            return ($hrs.':'.$minutos);
-        }
-        else
-        {
-            return ($hrs+$minutos/60);
-        }
- 
-    } 
 
     private function getHorario($empleado,$tipo) { 
         

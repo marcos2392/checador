@@ -268,3 +268,36 @@ function getDia() {
     return $dia;
 }
 
+function getCalcular($hora1,$hora2,$hrs_dia){  
+
+    $separar[1]=explode(':',$hora1); 
+    $separar[2]=explode(':',$hora2); 
+
+    $total_minutos_transcurridos[1] = ($separar[1][0]*60)+$separar[1][1]; 
+    $total_minutos_transcurridos[2] = ($separar[2][0]*60)+$separar[2][1];
+    $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2]; 
+
+    $total_minutos_transcurridos=$total_minutos_transcurridos/60; 
+    $hrs=floor($total_minutos_transcurridos);
+    $minutos=($total_minutos_transcurridos*60)%60;
+
+
+    if($hrs_dia==false)
+    {
+        if($hrs<=9)
+        {
+            $hrs='0'.$hrs;
+        } 
+        if($minutos<=9)
+        {
+           $minutos='0'.$minutos;
+        } 
+
+        return ($hrs.':'.$minutos);
+    }
+    else
+    {
+        return ($hrs+$minutos/60);
+    }
+} 
+
