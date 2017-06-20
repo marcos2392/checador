@@ -193,7 +193,8 @@ class UsuariosController extends AppController
 
         $registrar=false;
 
-        $empleados=$this->Empleados->find();
+        $empleados=$this->Empleados->find()
+        ->where(['status'=>true]);
         
         foreach($empleados as $empleado)
         { 
@@ -242,7 +243,8 @@ class UsuariosController extends AppController
         $dia=getdia();
         $dia=($dia==1)? 7 : $dia-1;
 
-        $empleados=$this->Empleados->find();
+        $empleados=$this->Empleados->find()
+        ->where(['status'=>true]);
         
         foreach($empleados as $empleado) 
         {
