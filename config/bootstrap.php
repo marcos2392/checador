@@ -223,7 +223,7 @@ if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
 
-function horas($minutos)
+/*function horas($minutos)
 {
     $horas=floor($minutos/60);
     $min = $minutos%60;
@@ -232,6 +232,14 @@ function horas($minutos)
     $h=''; 
     if($horas<10): $h='0'; endif;
     return $h.$horas.':'.$m.$min;
+}*/
+
+function Horas($horas){
+
+    $hrs=floor($horas);
+    $min=round(($horas-$hrs)*60);
+
+    return sprintf("%02d:%02d",$hrs,$min);
 }
 
 function getDia() {
@@ -268,36 +276,27 @@ function getDia() {
     return $dia;
 }
 
-function getCalcular($hora1,$hora2,$hrs_dia){  
+function Calcular($hora1,$hora2){  
 
-    $separar[1]=explode(':',$hora1); 
-    $separar[2]=explode(':',$hora2); 
+    $salida=explode(':',$hora1); 
+    $entrada=explode(':',$hora2);
 
-    $total_minutos_transcurridos[1] = ($separar[1][0]*60)+$separar[1][1]; 
-    $total_minutos_transcurridos[2] = ($separar[2][0]*60)+$separar[2][1];
-    $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2]; 
+    $minutos_por_retardo=0;
+
+    if($entrada[1]>10)
+    {
+        $minutos_por_retardo=$entrada[1]-60;
+    }
+
+    $total_minutos_transcurridos[1] = ($salida[0]*60)+$salida[1]; 
+    $total_minutos_transcurridos[2] = ($entrada[0]*60)+$entrada[1];
+    $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2]+$minutos_por_retardo; 
 
     $total_minutos_transcurridos=$total_minutos_transcurridos/60; 
     $hrs=floor($total_minutos_transcurridos);
     $minutos=($total_minutos_transcurridos*60)%60;
 
-
-    if($hrs_dia==false)
-    {
-        if($hrs<=9)
-        {
-            $hrs='0'.$hrs;
-        } 
-        if($minutos<=9)
-        {
-           $minutos='0'.$minutos;
-        } 
-
-        return ($hrs.':'.$minutos);
-    }
-    else
-    {
-        return ($hrs+$minutos/60);
-    }
+    return ($hrs+$minutos/60);
+    
 } 
 

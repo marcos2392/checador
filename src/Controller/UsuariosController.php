@@ -28,7 +28,7 @@ class UsuariosController extends AppController
             if ($usuario) {
                 $this->Auth->setUser($usuario);
                 $this->descansos();
-                $this->faltas();
+                //$this->faltas();
                 $this->extras();
                 return $this->redirect($this->Auth->redirectUrl());
             }
@@ -42,8 +42,6 @@ class UsuariosController extends AppController
 
     public function usuarios() {
         
-        //$usuarios=$this->Usuarios->find()
-        //->contain(['Sucursales']);
         $user=[];
 
         $usuarios=$this->Usuarios->find();
@@ -258,7 +256,7 @@ class UsuariosController extends AppController
                 if($checadas->isEmpty())
                 {
                     $salida=$this->gethorario($dia,$empleado,"salida");
-                    $hrs_dia=getcalcular($salida,$entrada,true);
+                    $hrs_dia=Calcular($salida,$entrada,true);
 
                     $checar = $this->Checadas->newEntity();
                     $checar->empleados_id = $empleado->id;
@@ -303,32 +301,32 @@ class UsuariosController extends AppController
         if($dia==2)
         {
             $entrada=$empleado->martes_entrada;
-            $salida=$empleado->lunes_salida;
+            $salida=$empleado->martes_salida;
         }
         if($dia==3)
         {
             $entrada=$empleado->miercoles_entrada;
-            $salida=$empleado->lunes_salida;
+            $salida=$empleado->miercoles_salida;
         }
         if($dia==4)
         {
             $entrada=$empleado->jueves_entrada;
-            $salida=$empleado->lunes_salida;
+            $salida=$empleado->jueves_salida;
         }
         if($dia==5)
         {
             $entrada=$empleado->viernes_entrada;
-            $salida=$empleado->lunes_salida;
+            $salida=$empleado->viernes_salida;
         }
         if($dia==6)
         {
             $entrada=$empleado->sabado_entrada;
-            $salida=$empleado->lunes_salida;
+            $salida=$empleado->sabado_salida;
         }
         if($dia==7)
         {
             $entrada=$empleado->domingo_entrada;
-            $salida=$empleado->lunes_salida;
+            $salida=$empleado->domingo_salida;
         }
 
         if($tipo=="entrada")

@@ -17,7 +17,7 @@ class PrincipalController extends AppController
     public function beforeFilter(Event $event) {
         $this->loadModel('Empleados');
         $this->loadModel('Checadas');
-        
+        $this->loadModel('HorariosNomina');
     }
 
     public function inicio() {
@@ -28,10 +28,12 @@ class PrincipalController extends AppController
     	$empleados=$this->Empleados->find()
     	->contain(['sucursales'])
     	->where(['sucursal_id'=>$usuario->sucursal_id,'empleados.status'=>true])
-        ->order(['empleados.nombre']);
+        ->order(['empleados.nombre'])
+        ->toArray();
 
         $checadas=$this->Checadas->find()
-        ->where(["DATE_FORMAT(fecha, '%Y-%m-%d')='". $fecha ."' and descanso<>1"]);
+        ->where(["DATE_FORMAT(fecha, '%Y-%m-%d')='". $fecha ."' and descanso<>1"])
+        ->toArray();
 
         $this->set(compact('empleados','checadas'));
     }
@@ -46,18 +48,12 @@ class PrincipalController extends AppController
 
         $fecha=date('Y-m-d');
         $hora = $this->gethora();
-        $id = $this->request->getData('id');
+        $id = $this->request->getData('empleados'); 
+
         $dia=getdia();
 
         $empleado=$this->getempleado();
 
-        if(!$empleado)
-        {
-            $this->Flash->default("No existe el empleado con el ID: ".$id."");
-            return $this->redirect(['action' => 'inicio']);
-        }
-
-        
         $checada_existente = $this->Checadas->find()
         ->where(['empleados_id' => $id,'fecha'=>$fecha])
         ->order('id desc')
@@ -90,11 +86,11 @@ class PrincipalController extends AppController
                         $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
                         $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
                         $salida=$this->gethorario($empleado,"salida")->format("H:i");
-                        
-                        $entrada_horario=$entrada;
-                        $salida_horario=$salida; 
 
-                        $hrs_dia=getcalcular($salida_horario,$entrada_horario,true);
+                        $entrada_horario=$entrada;
+                        $salida_horario=$salida;
+
+                        $hrs_dia=calcular($salida_horario,$entrada_horario);
                         
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
@@ -103,7 +99,31 @@ class PrincipalController extends AppController
                         $hora_tolerancia = strtotime($hora_tolerancia);
 
                         if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                        $hora_ent=($retardo==false)? $entrada : $hora;
+                        //$hora_ent=($retardo==false)? $entrada : $hora;
+                        $hora_ent=$hora;
+
+                        $horarios_nomina=$this->HorariosNomina->find()
+                        ->where(['entrada_real'=>$entrada_horario,'salida_real'=>$salida_horario])
+                        ->toArray();
+
+                        foreach($horarios_nomina as $hn)
+                        {
+                            $entrada_nomina=$hn->entrada_nomina->format("H:i");
+                            $salida_nomina=$hn->salida_nomina->format("H:i");
+                        }
+
+                        if($hora1>$segundos_hora)
+                        {
+                            $hora=explode(':',$hora); 
+
+                            if($hora[1]>10)
+                            { 
+                                $entrada_nomina=explode(':',$entrada_nomina);
+                                $hrs=$entrada_nomina[0]+1; 
+                                $hrs=$hrs.':00'; 
+                                $entrada_nomina=$hrs;
+                            }
+                        }
                     }
 
                     $checar = $this->Checadas->newEntity();
@@ -115,6 +135,8 @@ class PrincipalController extends AppController
                     $checar->entrada_horario=$entrada_horario;
                     $checar->salida_horario=$salida_horario;
                     $checar->hrs_dia=$hrs_dia;
+                    $checar->entrada_nomina=$entrada_nomina;
+                    $checar->salida_nomina=$salida_nomina;
                     $checar->sucursal = $empleado->sucursal_id;
 
                     $this->Checadas->save($checar);
@@ -137,7 +159,6 @@ class PrincipalController extends AppController
 
                 if($empleado->tipo_extra!=2)
                 {
-                    
                     $salida=$this->gethorario($empleado,"salida")->format("H:i");
                     
                     $salida_empleado=strtotime($salida);
@@ -146,7 +167,7 @@ class PrincipalController extends AppController
                     $hora=($hora1 > $salida_empleado)? $salida : $hora;
                 }
 
-                $horas_trabajadas= getcalcular($hora,$checada_existente->entrada->format("H:i"),false); 
+                $horas_trabajadas= calcular($hora,$checada_existente->entrada->format("H:i")); 
 
                 $registro->salida = $hora;
                 $registro->horas = $horas_trabajadas;
@@ -181,7 +202,7 @@ class PrincipalController extends AppController
 
     private function getEmpleado() {
         
-        $id_empleado = $this->request->getData('id') ?? null;
+        $id_empleado = $this->request->getData('empleados') ?? null;
         if ($id_empleado) {
             try {
                 return $this->Empleados->get($id_empleado);
@@ -243,8 +264,5 @@ class PrincipalController extends AppController
         {
            return $salida; 
         }
-
-        
-        
     }
 }
