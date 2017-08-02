@@ -90,7 +90,7 @@ class PrincipalController extends AppController
                         $entrada_horario=$entrada;
                         $salida_horario=$salida;
 
-                        $hrs_dia=calcular($salida_horario,$entrada_horario);
+                        $hrs_dia=calcular($salida_horario,$entrada_horario,false);
                         
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
@@ -167,7 +167,7 @@ class PrincipalController extends AppController
                     $hora=($hora1 > $salida_empleado)? $salida : $hora;
                 }
 
-                $horas_trabajadas= calcular($hora,$checada_existente->entrada->format("H:i")); 
+                $horas_trabajadas= calcular($hora,$checada_existente->entrada->format("H:i"),true);
 
                 $registro->salida = $hora;
                 $registro->horas = $horas_trabajadas;

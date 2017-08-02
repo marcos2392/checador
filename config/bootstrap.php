@@ -276,17 +276,20 @@ function getDia() {
     return $dia;
 }
 
-function Calcular($hora1,$hora2){  
-
+function Calcular($hora1,$hora2,$calculo_horas_checadas){ 
     $salida=explode(':',$hora1); 
     $entrada=explode(':',$hora2);
 
     $minutos_por_retardo=0;
 
-    if($entrada[1]>10)
+    if($calculo_horas_checadas)
     {
-        $minutos_por_retardo=$entrada[1]-60;
+        if($entrada[1]>10)
+        {
+            $minutos_por_retardo=$entrada[1]-60;
+        }
     }
+    
 
     $total_minutos_transcurridos[1] = ($salida[0]*60)+$salida[1]; 
     $total_minutos_transcurridos[2] = ($entrada[0]*60)+$entrada[1];
