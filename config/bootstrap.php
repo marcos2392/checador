@@ -276,24 +276,63 @@ function getDia() {
     return $dia;
 }
 
-function Calcular($hora1,$hora2,$calculo_horas_checadas){ 
+function Calcular($hora1,$hora2,$entrada_horario,$salida_horario,$tipo_extra){ 
+
     $salida=explode(':',$hora1); 
     $entrada=explode(':',$hora2);
+    $entrada_horario=explode(':',$entrada_horario);
+    $salida_horario=explode(':',$salida_horario);
 
-    $minutos_por_retardo=0;
+    $minutos_horario_salida=$salida_horario[0]*60+$salida_horario[1]; 
+    $minutos_salida=$salida[0]*60+$salida[1];
 
-    if($calculo_horas_checadas)
+    $hrs_diferencia=$entrada[0]-$entrada_horario[0];
+    $minutos_diferencia=$entrada[1]-$entrada_horario[1];
+
+    if($hrs_diferencia<1)
     {
-        if($entrada[1]>10)
+        if($minutos_diferencia>10)
         {
-            $minutos_por_retardo=$entrada[1]-60;
+            $entrada[0]=$entrada[0]+1;
+            $entrada[1]=$entrada_horario[1];
+        }
+        else
+        {
+            if($tipo_extra!=1)
+            {
+                $entrada=$entrada_horario;
+            }
         }
     }
-    
 
-    $total_minutos_transcurridos[1] = ($salida[0]*60)+$salida[1]; 
+    if($tipo_extra!=2)
+    { 
+        if($minutos_salida>$minutos_horario_salida)
+        {
+            $salida=$salida_horario; 
+        }
+    }
+
+    $total_minutos_transcurridos[1] = ($salida[0]*60)+$salida[1];
     $total_minutos_transcurridos[2] = ($entrada[0]*60)+$entrada[1];
-    $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2]+$minutos_por_retardo; 
+    $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2];
+
+    $total_minutos_transcurridos=$total_minutos_transcurridos/60;
+    $hrs=floor($total_minutos_transcurridos);
+    $minutos=($total_minutos_transcurridos*60)%60;
+
+    return ($hrs+$minutos/60);
+    
+} 
+
+function CalcularHorasDia($hora1,$hora2){
+
+    $salida=explode(':',$hora1);
+    $entrada=explode(':',$hora2);
+
+    $total_minutos_transcurridos[1] = ($salida[0]*60)+$salida[1];
+    $total_minutos_transcurridos[2] = ($entrada[0]*60)+$entrada[1];
+    $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2];
 
     $total_minutos_transcurridos=$total_minutos_transcurridos/60; 
     $hrs=floor($total_minutos_transcurridos);

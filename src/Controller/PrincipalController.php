@@ -90,7 +90,7 @@ class PrincipalController extends AppController
                         $entrada_horario=$entrada;
                         $salida_horario=$salida;
 
-                        $hrs_dia=calcular($salida_horario,$entrada_horario,false);
+                        $hrs_dia=CalcularHorasDia($salida_horario,$entrada_horario);
                         
                         $segundos_tolerancia=$tolerancia*60;
                         $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia); 
@@ -99,7 +99,6 @@ class PrincipalController extends AppController
                         $hora_tolerancia = strtotime($hora_tolerancia);
 
                         if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                        //$hora_ent=($retardo==false)? $entrada : $hora;
                         $hora_ent=$hora;
 
                         $horarios_nomina=$this->HorariosNomina->find()
@@ -119,8 +118,9 @@ class PrincipalController extends AppController
                             if($hora[1]>10)
                             { 
                                 $entrada_nomina=explode(':',$entrada_nomina);
-                                $hrs=$entrada_nomina[0]+1; 
-                                $hrs=$hrs.':00'; 
+                                $hr=$hora[0]-$entrada_nomina[0];
+                                $hrs=$entrada_nomina[0]+$hr;
+                                $hrs=$hrs.$entrada_nomina[1];
                                 $entrada_nomina=$hrs;
                             }
                         }
@@ -138,6 +138,7 @@ class PrincipalController extends AppController
                     $checar->entrada_nomina=$entrada_nomina;
                     $checar->salida_nomina=$salida_nomina;
                     $checar->sucursal = $empleado->sucursal_id;
+                    $checar->tipo_extra = $empleado->tipo_extra;
 
                     $this->Checadas->save($checar);
 
@@ -163,11 +164,9 @@ class PrincipalController extends AppController
                     
                     $salida_empleado=strtotime($salida);
                     $hora1 = strtotime($hora);
-
-                    $hora=($hora1 > $salida_empleado)? $salida : $hora;
                 }
 
-                $horas_trabajadas= calcular($hora,$checada_existente->entrada->format("H:i"),true);
+                $horas_trabajadas= Calcular($hora,$checada_existente->entrada->format("H:i"),$registro->entrada_horario->format("H:i"),$registro->salida_horario->format("H:i"),$empleado->tipo_extra);
 
                 $registro->salida = $hora;
                 $registro->horas = $horas_trabajadas;
