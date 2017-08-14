@@ -40,17 +40,8 @@ class PrincipalController extends AppController
 
     public function checar() {
 
-        $usuario = $this->getUsuario();
-
-        $registrar=false;
-        $descanso=false;
-        $retardo=false;
-
         $fecha=date('Y-m-d');
-        $hora = $this->gethora();
         $id = $this->request->getData('empleados'); 
-
-        $dia=getdia();
 
         $empleado=$this->getempleado();
 
@@ -60,7 +51,34 @@ class PrincipalController extends AppController
         ->first();
 
         if(empty($checada_existente))
-        { 
+        {
+            $this->checador($empleado,$checada_existente,$id,"entrada",false);
+        }
+        else
+        {
+            if($checada_existente->salida!=null)
+            {
+                $this->checador($empleado,$checada_existente,$id,"entrada",true);
+            }
+            else
+            {
+                $this->checador($empleado,$checada_existente,$id,"salida",false);
+            }
+        }
+    }
+
+    private function checador($empleado,$checada_existente,$id,$tipo,$multiple_checada){
+
+        $fecha=date('Y-m-d');
+        $dia=getdia();
+        $usuario = $this->getUsuario();
+        $hora = $this->gethora();
+        $registrar=false;
+        $descanso=false;
+        $retardo=false;
+
+        if($tipo=="entrada")
+        {
             if($empleado->sucursal_id==$usuario->sucursal_id) 
             { 
                 if($empleado->descanso==$dia)
@@ -126,6 +144,12 @@ class PrincipalController extends AppController
                         }
                     }
 
+                    if($multiple_checada==true)
+                    {
+                        $hrs_dia=0;
+                        $retardo=false;
+                    }
+
                     $checar = $this->Checadas->newEntity();
                     $checar->empleados_id = $id;
                     $checar->fecha = $fecha;
@@ -153,49 +177,25 @@ class PrincipalController extends AppController
             }
         }
         else
-        {
-            if ($checada_existente->entrada!=null and $checada_existente->salida==null) 
+        { 
+            $registro = $this->Checadas->get($checada_existente->id);
+
+            if($empleado->tipo_extra!=2)
             {
-                $registro = $this->Checadas->get($checada_existente->id);
-
-                if($empleado->tipo_extra!=2)
-                {
-                    $salida=$this->gethorario($empleado,"salida")->format("H:i");
-                    
-                    $salida_empleado=strtotime($salida);
-                    $hora1 = strtotime($hora);
-                }
-
-                $horas_trabajadas= Calcular($hora,$checada_existente->entrada->format("H:i"),$registro->entrada_horario->format("H:i"),$registro->salida_horario->format("H:i"),$empleado->tipo_extra);
-
-                $registro->salida = $hora;
-                $registro->horas = $horas_trabajadas;
-
-                $this->Checadas->save($registro);
-
-                $this->redirect(['action' => 'inicio']);
+                $salida=$this->gethorario($empleado,"salida")->format("H:i");
+                
+                $salida_empleado=strtotime($salida);
+                $hora1 = strtotime($hora);
             }
-            else
-            {
-                if($checada_existente->descanso==true)
-                {
-                    $this->Flash->success("Este empleado descansa.Cualquier cosa comuniquese con algun administrador.");
-                    $this->redirect(['action' => 'inicio']);
-                }
-                else
-                {
-                    $checar = $this->Checadas->newEntity();
-                    $checar->empleados_id = $id;
-                    $checar->entrada = $hora;
-                    $checar->fecha=$fecha;
-                    $checar->dia = $dia;
-                    $checar->sucursal = $empleado->sucursal_id;
-                    $this->Checadas->save($checar);
+            //debug($checada_existente); die;
+            $horas_trabajadas= Calcular($hora,$checada_existente->entrada->format("H:i"),$registro->entrada_horario->format("H:i"),$registro->salida_horario->format("H:i"),$empleado->tipo_extra);
 
-                    $this->Flash->default("Se Checo exitosamente.");
-                    $this->redirect(['action' => 'inicio']);
-                }
-            }
+            $registro->salida = $hora;
+            $registro->horas = $horas_trabajadas;
+
+            $this->Checadas->save($registro);
+
+            $this->redirect(['action' => 'inicio']);
         }
     }
 

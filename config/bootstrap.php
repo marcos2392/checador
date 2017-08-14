@@ -288,7 +288,7 @@ function Calcular($hora1,$hora2,$entrada_horario,$salida_horario,$tipo_extra){
 
     $hrs_diferencia=$entrada[0]-$entrada_horario[0];
     $minutos_diferencia=$entrada[1]-$entrada_horario[1];
-
+    
     if($hrs_diferencia<1)
     {
         if($minutos_diferencia>10)
