@@ -376,7 +376,7 @@ function FormatoHora($hora) {
     }
 }
 
-function prueba($empleado,$sucursal){
+function ChecadaVisible($empleado,$sucursal){
 
     if($empleado->sucursal_id==$sucursal and $empleado->checada_visible==false)
     {

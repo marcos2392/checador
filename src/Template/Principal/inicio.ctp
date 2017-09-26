@@ -84,9 +84,9 @@
                             $id_dup=$empleado->id;
                         }
 
-                        $prueba=prueba($empleado,$usuario->sucursal_id);
+                        $checada_visible=ChecadaVisible($empleado,$usuario->sucursal_id);
 
-                        if($prueba)
+                        if($checada_visible)
                         { 
     
                         ?>
