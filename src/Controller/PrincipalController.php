@@ -92,8 +92,6 @@ class PrincipalController extends AppController
         ->where(['empleado_id'=>$empleado->id])
         ->first();
 
-        
-
         if($tipo=="entrada")
         {
             if($empleado->sucursal_id==$usuario->sucursal_id  or $sucursal_empleado['sucursal_id']=$usuario->sucursal_id ) 
@@ -146,16 +144,16 @@ class PrincipalController extends AppController
                     {   
                         $hora=explode(':',$hora);
 
-                        $hora_retardo=CalcularHorasDia(date("H:i",$hora1),$entrada_nomina);
+                        $hora_retardo=CalcularHorasDia(date("H:i",$hora1),$entrada_horario);
 
                         if($hora_retardo>1)
                         {
                             $entrada_nomina=date("H:i",$hora1); 
                         }
-                        else
-                        {
-                            $entrada_nomina=explode(':',$entrada_nomina);
-                            $hr=$hora[0]+1;
+                        if($hora[1]>10)
+                        { 
+                            $entrada_nomina=explode(':',$entrada_nomina); 
+                            $hr=$entrada_nomina[0]+1;
                             $entrada_nomina=$hr.':00';
                         }
                     }
