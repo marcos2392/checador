@@ -93,7 +93,7 @@
                                 {
                                     if($r->retardo): $retardos++; endif;
                                     if($r->falta): $faltas++; endif;
-                                    if($r->horas!=NULL): $minutos+=$r->minutos(); endif;
+                                    if($r->hrs_finales!=NULL): $minutos+=$r->minutos(); endif;
                                 }
                                 if($r->dia==$dia)
                                 { 
@@ -138,7 +138,7 @@
                             <?php }
                         endforeach; ?>
                         <td colspan="2"><?=  $retardos ?></td>
-                        <td colspan="2"><?=  $faltas ?></td>
+                        <td colspan="2"><?=  $faltas ?></td> 
                         <td colspan="2"><?= $hrs_t=Horas($minutos); ?></td>
                     </tr>
                 <?php endforeach; ?>

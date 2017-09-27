@@ -276,12 +276,12 @@ function getDia() {
     return $dia;
 }
 
-function Calcular($hora1,$hora2,$entrada_horario,$salida_horario,$tipo_extra){ 
+function Calcular($hora1,$registro,$tipo_extra){
 
     $salida=explode(':',$hora1); 
-    $entrada=explode(':',$hora2);
-    $entrada_horario=explode(':',$entrada_horario);
-    $salida_horario=explode(':',$salida_horario);
+    $entrada=explode(':',$registro->entrada->format("H:i"));
+    $entrada_horario=explode(':',$registro->entrada_horario->format("H:i"));
+    $salida_horario=explode(':',$registro->salida_horario->format("H:i"));
 
     $minutos_horario_salida=$salida_horario[0]*60+$salida_horario[1]; 
     $minutos_salida=$salida[0]*60+$salida[1];
@@ -339,6 +339,54 @@ function CalcularHorasDia($hora1,$hora2){
     $minutos=($total_minutos_transcurridos*60)%60;
 
     return ($hrs+$minutos/60);
-    
 } 
+
+function FormatoHora($hora) {
+
+    if($hora!="00:00")
+    {
+        $separar[1]=explode(':',$hora); 
+
+        $hora=$separar[1][0];
+        $minutos=$separar[1][1];
+        
+        if ($hora == 1) {
+            $hora=13;
+        } elseif ($hora == 2) {
+            $hora=14;
+        } elseif ($hora == 3) {
+            $hora=15;
+        } elseif ($hora == 4) {
+            $hora=16;
+        }elseif ($hora == 5) {
+            $hora=17;
+        }elseif ($hora == 6) {
+            $hora=18;
+        }elseif ($hora == 7) {
+            $hora=19;
+        }elseif ($hora == 8) {
+            $hora=20;
+        }
+
+        return $hora.':'.$minutos;
+    }
+    else
+    {
+        return null;
+    }
+}
+
+function prueba($empleado,$sucursal){
+
+    if($empleado->sucursal_id==$sucursal and $empleado->checada_visible==false)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
 

@@ -83,15 +83,21 @@
                             $emp=$empleado->ncompleto;
                             $id_dup=$empleado->id;
                         }
-                    ?>
-                    <tr>
-                        <td ><?= $emp ?></td>
-                        <td><?= $empleado->sucursal->nombre ?></td>
-                        <td><?= $checada->entrada->format("h:i") ?></td>
-                        <td><?= ($checada->salida!=null)? $checada->salida->format("h:i"): ""  ?></td>
-                        <td><?= ($checada->horas!=null)? Horas($checada->horas) : ""  ?></td>
-                    </tr>
-                <?php }}
+
+                        $prueba=prueba($empleado,$usuario->sucursal_id);
+
+                        if($prueba)
+                        { 
+    
+                        ?>
+                        <tr>
+                            <td ><?= $emp ?></td>
+                            <td><?= $empleado->sucursal->nombre ?></td>
+                            <td><?= $checada->entrada->format("h:i") ?></td>
+                            <td><?= ($checada->salida!=null)? $checada->salida->format("h:i"): ""  ?></td>
+                            <td><?= ($checada->horas!=null)? Horas($checada->horas) : ""  ?></td>
+                        </tr>
+                    <?php } }}
                 endforeach; ?>
         </table>
     </div>

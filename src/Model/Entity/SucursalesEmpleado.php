@@ -4,21 +4,16 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Checada Entity
+ * SucursalesEmpleado Entity
  *
  * @property int $id
- * @property int $empleados_id
- * @property \Cake\I18n\Time $fecha
- * @property \Cake\I18n\Time $entrada
- * @property \Cake\I18n\Time $salida
- * @property \Cake\I18n\Time $horas
- * @property bool $retardo
- * @property bool $falta
- * @property int $descanso
+ * @property int $empleado_id
+ * @property int $sucursal_id
  *
  * @property \App\Model\Entity\Empleado $empleado
+ * @property \App\Model\Entity\Sucursal $sucursal
  */
-class Checada extends Entity
+class SucursalesEmpleado extends Entity
 {
 
     /**
@@ -34,11 +29,4 @@ class Checada extends Entity
         '*' => true,
         'id' => false
     ];
-
-    public function minutos()
-    {
-        $hora=$this->hrs_finales;
-        
-        return $hora;
-    }
 }

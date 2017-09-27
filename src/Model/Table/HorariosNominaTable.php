@@ -33,6 +33,7 @@ class HorariosNominaTable extends Table
         $this->setTable('horarios_nomina');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
+
     }
 
     /**

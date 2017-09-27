@@ -35,7 +35,7 @@ class EmpleadosTable extends Table
         $this->setPrimaryKey('id');
 
         $this->belongsTo('sucursales');
-        
+
     }
 
     /**
@@ -84,6 +84,18 @@ class EmpleadosTable extends Table
             ->notEmpty('sucursal');
 
         return $validator;
+    }
+
+    public function findSucursalesChecadas($qry,$opciones){
+
+        //debug($opciones["usuario"]); die;
+        $qry
+        ->contain('sucursales')
+        ->where(['OR' => ['Empleados.sucursal_id'=>$opciones["usuario"]->sucursal_id, 'SucursalesEmpleados.sucursal_id' => $opciones['usuario']->sucursal_id]])
+        ->join(['SucursalesEmpleados' => ['type' => 'LEFT', 'table' => 'sucursales_empleados', 'conditions' => 'SucursalesEmpleados.empleado_id = Empleados.id']]);
+
+        //debug($qry->toArray()); die;
+        return $qry;
     }
 
     public static function defaultConnectionName()
