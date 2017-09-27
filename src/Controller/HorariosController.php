@@ -25,7 +25,7 @@ class HorariosController extends AppController
         $sucursal=$usuario->sucursal_id;
 
         $empleados=$this->Empleados->find()
-        ->where(['sucursal_id'=>$sucursal])
+        ->where(['sucursal_id'=>$sucursal,'status'=>true])
         ->toArray();
 
         $horarios_semanal=$this->RegistroHorarios($sucursal);

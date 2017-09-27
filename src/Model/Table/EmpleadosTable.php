@@ -91,7 +91,7 @@ class EmpleadosTable extends Table
         //debug($opciones["usuario"]); die;
         $qry
         ->contain('sucursales')
-        ->where(['OR' => ['Empleados.sucursal_id'=>$opciones["usuario"]->sucursal_id, 'SucursalesEmpleados.sucursal_id' => $opciones['usuario']->sucursal_id]])
+        ->where(['Empleados.status'=>true,'OR' => ['Empleados.sucursal_id'=>$opciones["usuario"]->sucursal_id, 'SucursalesEmpleados.sucursal_id' => $opciones['usuario']->sucursal_id]])
         ->join(['SucursalesEmpleados' => ['type' => 'LEFT', 'table' => 'sucursales_empleados', 'conditions' => 'SucursalesEmpleados.empleado_id = Empleados.id']]);
 
         //debug($qry->toArray()); die;
