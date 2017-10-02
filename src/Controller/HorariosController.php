@@ -26,54 +26,12 @@ class HorariosController extends AppController
 
         $empleados=$this->Empleados->find()
         ->where(['sucursal_id'=>$sucursal,'status'=>true])
-        ->toArray();
+        ->toArray(); 
 
-        $horarios_semanal=$this->RegistroHorarios($sucursal);
-
-        if($horarios_semanal==[])
-        {
-            foreach($empleados as $emp)
-            {
-                $this->CrearRegistro($sucursal,$emp->id);
-            }
-            
-        }
-        else
-        {
-            foreach($empleados as $emp)
-            {
-                $existe=false;
-
-                foreach($horarios_semanal as $hs)
-                { 
-                    if($emp->id== $hs->empleado_id)
-                    {
-                        $existe=true;
-                    } 
-                }
-
-                if($existe==false)
-                {
-                    $this->CrearRegistro($sucursal,$emp->id);
-                }
-            }
-        }
-
-        $horarios_semanal=$this->RegistroHorarios($sucursal); 
-
-         $this->set(compact('empleados','sucursal','horarios_semanal'));
+         $this->set(compact('empleados','sucursal'));
     }
 
-    private function CrearRegistro($sucursal,$empleado){
-
-        $registro = $this->HorariosEmpleadas->newEntity();
-        $registro->empleado_id=$empleado;
-        $registro->sucursal_id=$sucursal;
-        $this->HorariosEmpleadas->save($registro);
-
-    }
-
-    public function actualizar() {
+    public function actualizar() { 
 
         $usuario = $this->getUsuario();
         $sucursal=$usuario->sucursal_id;
@@ -88,18 +46,18 @@ class HorariosController extends AppController
                 {
                     if($hora!='')
                     {
-                        $horarios_semanal=$this->HorariosEmpleadas->get($id);
+                        $horarios_empleada=$this->Empleados->get($id);
 
                         if($dia=='descanso')
                         {
-                            $horarios_semanal->descanso=$hora;
+                            $horarios_empleada->descanso=$hora;
                         }
                         else
                         {
-                            $horarios_semanal->$dia=FormatoHora($hora);
+                            $horarios_empleada->$dia=FormatoHora($hora);
                         }
 
-                        $this->HorariosEmpleadas->save($horarios_semanal);
+                        $this->Empleados->save($horarios_empleada);
                     }
                 }
             }
@@ -107,16 +65,6 @@ class HorariosController extends AppController
 
         $this->Flash->default("Se Actualizo Correctamente.");
         $this->redirect(['action' => 'semanal']);
-        
-    }
-
-    public function RegistroHorarios($sucursal){
-
-        $horarios_semanal=$this->HorariosEmpleadas->find() 
-        ->where(['sucursal_id'=>$sucursal])
-        ->toArray();
-
-        return $horarios_semanal;
     }
 }
 

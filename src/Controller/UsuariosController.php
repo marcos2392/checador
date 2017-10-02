@@ -32,7 +32,6 @@ class UsuariosController extends AppController
                 $this->descansos();
                 //$this->faltas();
                 $this->extras();
-                $this->ActualizacionHorarios();
                 return $this->redirect($this->Auth->redirectUrl());
             }
             $this->Flash->error('Usuario o contraseña incorrectos.');
@@ -275,53 +274,6 @@ class UsuariosController extends AppController
                 }
             }
         }
-    }
-
-    private function ActualizacionHorarios(){
-
-        $dia=getdia();
-        $fecha_actualizacion=date('Y-m-d',strtotime('monday this week +7 days'));
-        $variable=$this->Variables->get(1);
-        
-        $fecha=date('Y-m-d');
-
-        if($variable->fecha_actualizacion->format("Y-m-d")==$fecha)
-        {
-            $horarios=$this->HorariosEmpleadas->find()
-            ->toArray();
-
-            $dias=["descanso","lunes_entrada","lunes_salida","martes_entrada","martes_salida","miercoles_entrada","miercoles_salida","jueves_entrada","jueves_salida","viernes_entrada","viernes_salida","sabado_entrada","sabado_salida","domingo_entrada","domingo_salida"];
-
-            foreach($horarios as $h)
-            {
-                $id=$h["empleado_id"];
-                $empleado=$this->Empleados->get($id);
-
-                $dias_trabajo=[$h];
-                
-                foreach($dias as $d)
-                {
-                    $empleado->$d=$h[$d];
-                    $this->Empleados->save($empleado);
-                }
-            }
-            
-            $variable=$this->Variables->get(1);
-            $variable->fecha_actualizacion=$fecha_actualizacion;
-            $this->Variables->save($variable);
-        }
-        
-    }
-
-    private function EstatusActualizacion($estatus){
-
-        $variable=$this->Variables->find()
-        ->where(['nombre'=>"Actualizacion Horarios"])
-        ->first();
-
-        $variable->estatus=$estatus;
-
-        $this->Variables->save($variable);
     }
 
     private function extras(){
