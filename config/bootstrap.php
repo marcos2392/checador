@@ -276,53 +276,40 @@ function getDia() {
     return $dia;
 }
 
-function Calcular($hora1,$registro,$tipo_extra){
+function Calcular($hora1,$registro){
 
-    $salida=explode(':',$hora1); 
-    $entrada=explode(':',$registro->entrada->format("H:i"));
-    $entrada_horario=explode(':',$registro->entrada_horario->format("H:i"));
+    $salida=explode(':',$hora1);
+    $entrada=$registro->entrada_horario->format("H:i");
     $salida_horario=explode(':',$registro->salida_horario->format("H:i"));
 
     $minutos_horario_salida=$salida_horario[0]*60+$salida_horario[1]; 
     $minutos_salida=$salida[0]*60+$salida[1];
 
-    $hrs_diferencia=$entrada[0]-$entrada_horario[0];
-    $minutos_diferencia=$entrada[1]-$entrada_horario[1];
+    $hora_retardo=CalcularHorasDia($registro->entrada->format("H:i"),$registro->entrada_horario->format("H:i"));
     
-    if($hrs_diferencia<1)
+    if($hora_retardo>.17)
     {
-        if($minutos_diferencia>10)
-        {
-            $entrada[0]=$entrada[0]+1;
-            $entrada[1]=$entrada_horario[1];
-        }
-        else
-        {
-            if($tipo_extra!=1)
-            {
-                $entrada=$entrada_horario;
-            }
-        }
+        $entrada=$registro->entrada->format("H:i"); 
     }
 
-    if($tipo_extra!=2)
-    { 
-        if($minutos_salida>$minutos_horario_salida)
-        {
-            $salida=$salida_horario; 
-        }
+    $salida_horario_minutos=($salida_horario[0]*60)+$salida_horario[1];
+    $salida_real_minutos=($salida[0]*60)+$salida[1];
+
+    if($salida_real_minutos>$salida_horario_minutos)
+    {
+        $salida=$salida_horario;
     }
-
-    $total_minutos_transcurridos[1] = ($salida[0]*60)+$salida[1];
-    $total_minutos_transcurridos[2] = ($entrada[0]*60)+$entrada[1];
-    $total_minutos_transcurridos = $total_minutos_transcurridos[1]-$total_minutos_transcurridos[2];
-
-    $total_minutos_transcurridos=$total_minutos_transcurridos/60;
-    $hrs=floor($total_minutos_transcurridos);
-    $minutos=($total_minutos_transcurridos*60)%60;
-
-    return ($hrs+$minutos/60);
     
+    $entrada=explode(':',$entrada);
+
+    $entrada_minutos=($entrada[0]*60)+$entrada[1]; 
+    $salida_minutos=($salida[0]*60)+$salida[1];
+
+    $minutos=($salida_minutos-$entrada_minutos)/60;
+    $horas=floor($minutos);
+    $minutos=($minutos*60)%60;
+
+    return ($horas+$minutos/60);
 } 
 
 function CalcularHorasDia($hora1,$hora2){

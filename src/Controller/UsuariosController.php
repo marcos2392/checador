@@ -31,7 +31,6 @@ class UsuariosController extends AppController
                 $this->Auth->setUser($usuario);
                 $this->descansos();
                 //$this->faltas();
-                $this->extras();
                 return $this->redirect($this->Auth->redirectUrl());
             }
             $this->Flash->error('Usuario o contraseña incorrectos.');
@@ -273,23 +272,6 @@ class UsuariosController extends AppController
                     $this->Checadas->save($checar);
                 }
             }
-        }
-    }
-
-    private function extras(){
-
-        $dia=getdia();
-
-        $empleados=$this->Empleados->find()
-        ->where(['dia_extra'=>$dia-1]);
-        
-        foreach($empleados as $empleado)
-        {
-            $borrar_extra = $this->Empleados->get($empleado->id);
-            $borrar_extra->dia_extra=0;
-            $borrar_extra->tipo_extra=0;
-
-            $this->Empleados->save($borrar_extra);
         }
     }
 

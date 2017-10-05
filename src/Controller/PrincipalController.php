@@ -26,12 +26,6 @@ class PrincipalController extends AppController
         $fecha=date('Y-m-d');
     	$usuario = $this->getUsuario();
 
-    	/*$empleados=$this->Empleados->find()
-    	->contain(['sucursales'])
-    	->where(['sucursal_id'=>$usuario->sucursal_id,'empleados.status'=>true])
-        ->order(['empleados.nombre'])
-        ->toArray();*/
-
         $empleados=$this->Empleados->find('sucursalesChecadas',['usuario'=>$usuario]); //debug($empleados->toArray()); die;
 
         $checadas=$this->Checadas->find()
@@ -96,69 +90,56 @@ class PrincipalController extends AppController
         {
             if($empleado->sucursal_id==$usuario->sucursal_id  or $sucursal_empleado['sucursal_id']=$usuario->sucursal_id ) 
             { 
-                if($empleado->tipo_extra==1 and $empleado->dia_extra==$dia)
-                {
-                    $hora_ent=$hora;
+                
+                $tolerancia=5; 
+
+                $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
+                $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
+                $salida=$this->gethorario($empleado,"salida")->format("H:i");
+
+                $entrada_horario=$entrada;
+                $salida_horario=$salida;
+
+                $hrs_dia=CalcularHorasDia($salida_horario,$entrada_horario);
+                
+                $segundos_tolerancia=$tolerancia*60;
+                $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia);
+
+                $hora1 = strtotime($hora);
+                $hora_tolerancia = strtotime($hora_tolerancia);
+
+                if($hora1 > $hora_tolerancia): $retardo=true; endif;
+                $hora_ent=$hora;
+
+                $horarios_nomina=$this->HorariosNomina->find()
+                ->where(['entrada_real'=>$entrada_horario,'salida_real'=>$salida_horario])
+                ->first();
+
+                if($horarios_nomina!=null)
+                {  
+                    $entrada_nomina=$horarios_nomina->entrada_nomina->format("H:i");
+                    $salida_nomina=$horarios_nomina->salida_nomina->format("H:i");
                 }
                 else
                 {
-                    $tolerancia=5; 
-
-                    $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
-                    $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
-                    $salida=$this->gethorario($empleado,"salida")->format("H:i");
-
-                    $entrada_horario=$entrada;
-                    $salida_horario=$salida;
-
-                    $hrs_dia=CalcularHorasDia($salida_horario,$entrada_horario);
-                    
-                    $segundos_tolerancia=$tolerancia*60;
-                    $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia);
-
-                    $hora1 = strtotime($hora);
-                    $hora_tolerancia = strtotime($hora_tolerancia);
-
-                    if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                    $hora_ent=$hora;
-
-                    $horarios_nomina=$this->HorariosNomina->find()
-                    ->where(['entrada_real'=>$entrada_horario,'salida_real'=>$salida_horario])
-                    ->first();
-
-                    if($horarios_nomina!=null)
-                    {  
-                        $entrada_nomina=$horarios_nomina->entrada_nomina->format("H:i");
-                        $salida_nomina=$horarios_nomina->salida_nomina->format("H:i");
-                    }
-                    else
-                    {
-                        $entrada_nomina=$entrada_horario;
-                        $salida_nomina=$salida_horario;
-                    }
-
-                    $hrs_nomina=CalcularHorasDia($salida_nomina,$entrada_nomina);
-
-
-                    if($hora1>$segundos_hora)
-                    {   
-                        $hora=explode(':',$hora);
-
-                        $hora_retardo=CalcularHorasDia(date("H:i",$hora1),$entrada_horario);
-
-                        if($hora_retardo>1)
-                        {
-                            $entrada_nomina=date("H:i",$hora1); 
-                        }
-                        if($hora[1]>10)
-                        { 
-                            $entrada_nomina=explode(':',$entrada_nomina); 
-                            $hr=$entrada_nomina[0]+1;
-                            $entrada_nomina=$hr.':00';
-                        }
-                    }
+                    $entrada_nomina=$entrada_horario;
+                    $salida_nomina=$salida_horario;
                 }
 
+                $hrs_nomina=CalcularHorasDia($salida_nomina,$entrada_nomina);
+
+                if($hora1>$segundos_hora)
+                {   
+                    $hora=explode(':',$hora);
+
+                    $hora_retardo=CalcularHorasDia(date("H:i",$hora1),$entrada_horario);
+
+                    if($hora_retardo>.17)
+                    {
+                        $entrada_nomina=date("H:i",$hora1); 
+                    }
+                }
+                
                 $checar = $this->Checadas->newEntity();
                 $checar->empleados_id = $id;
                 $checar->fecha = $fecha;
@@ -173,7 +154,6 @@ class PrincipalController extends AppController
                 $checar->salida_nomina=$salida_nomina;
                 $checar->sucursal = $empleado->sucursal_id;
                 $checar->sucursal_checada_id=$usuario->sucursal_id;
-                $checar->tipo_extra = $empleado->tipo_extra;
 
                 $this->Checadas->save($checar);
 
@@ -191,15 +171,7 @@ class PrincipalController extends AppController
         { 
             $registro = $this->Checadas->get($checada_existente->id);
 
-            if($empleado->tipo_extra!=2)
-            {
-                $salida=$this->gethorario($empleado,"salida")->format("H:i");
-                
-                $salida_empleado=strtotime($salida);
-                $hora1 = strtotime($hora);
-            }
-
-            $horas_trabajadas= Calcular($hora,$registro,$empleado->tipo_extra);
+            $horas_trabajadas= Calcular($hora,$registro);
 
             $registro->salida = $hora;
             $registro->horas = $horas_trabajadas;
