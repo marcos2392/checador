@@ -183,13 +183,13 @@ class PrincipalController extends AppController
             if($sucursal_info->horario_libre==false)
             {
                 $horas_trabajadas= Calcular($hora,$registro);
+                $hrs_finales=$horas_trabajadas;
             }
             else
             {
                 $horas_trabajadas=CalcularHorasDia($hora,$registro->entrada->format("H:i"));
+                $hrs_finales=$registro->hrs_nomina-($registro->hrs_dia-$horas_trabajadas);
             }
-
-            $hrs_finales=$registro->hrs_nomina-($registro->hrs_dia-$horas_trabajadas);
 
             $registro->salida = $hora;
             $registro->horas = $horas_trabajadas;
