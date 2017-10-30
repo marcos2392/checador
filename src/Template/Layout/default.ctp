@@ -68,11 +68,11 @@
         </div>
         <br>
         <?php if (isset($usuario)): ?>
-            <div class="navbar navbar-inverse"> 
-                <ul class="nav navbar-nav"> 
+            <div class="navbar navbar-inverse">
+                <ul class="nav navbar-nav">
                     <li><?= $this->Html->link('Checar', ['controller' =>'Principal','action' => 'inicio']); ?></li>
                     <li><?= $this->Html->link('Reportes', ['controller' =>'Reportes','action' => 'semanal']); ?></li>
-                </ul> 
+                </ul>
                 <?php if ($usuario->admin): ?>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
