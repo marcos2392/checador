@@ -209,10 +209,12 @@ class PrincipalController extends AppController
                 $registro_horas_checadas->fecha_inicio=$inicio_semana_actual;
                 $registro_horas_checadas->fecha_termino=$termino_semana_actual;
                 $registro_horas_checadas->hrs_checadas=$hrs_finales;
+                $registro_horas_checadas->hrs_editadas=$hrs_finales;
             }
             else
             {
                 $registro_horas_checadas->hrs_checadas=$registro_horas_checadas->hrs_checadas+$hrs_finales;
+                $registro_horas_checadas->hrs_checadas=$registro_horas_checadas->hrs_editadas+$hrs_finales;
             }
 
             $this->HorasChecadas->save($registro_horas_checadas);
