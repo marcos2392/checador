@@ -72,9 +72,6 @@
                 <ul class="nav navbar-nav"> 
                     <li><?= $this->Html->link('Checar', ['controller' =>'Principal','action' => 'inicio']); ?></li>
                     <li><?= $this->Html->link('Reportes', ['controller' =>'Reportes','action' => 'semanal']); ?></li>
-                    <?php if($usuario->horario_mixto==true){ ?>
-                    <li><?= $this->Html->link('Edicion Horarios', ['controller' =>'Horarios','action' => 'semanal']); ?></li> 
-                    <?php } ?>
                 </ul> 
                 <?php if ($usuario->admin): ?>
                     <ul class="nav navbar-nav navbar-right">
