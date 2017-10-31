@@ -19,6 +19,8 @@ class PrincipalController extends AppController
         $this->loadModel('Checadas');
         $this->loadModel('HorariosNomina');
         $this->loadModel('SucursalesEmpleados');
+        $this->loadModel('HorasChecadas');
+        $this->loadModel('Sucursales');
     }
 
     public function inicio() {
@@ -75,12 +77,16 @@ class PrincipalController extends AppController
     private function checador($empleado,$checada_existente,$id,$tipo){
 
         $fecha=date('Y-m-d');
+        $inicio_semana_actual=date("Y-m-d",strtotime('monday this week'));
+        $termino_semana_actual=date("Y-m-d",strtotime('sunday this week'));
         $dia=getdia();
         $usuario = $this->getUsuario();
         $hora = $this->gethora();
         $registrar=false;
         $descanso=false;
         $retardo=false;
+
+        $sucursal_info=$this->Sucursales->get($usuario->sucursal_id);
 
         $sucursal_empleado=$this->SucursalesEmpleados->find()
         ->where(['empleado_id'=>$empleado->id])
@@ -90,7 +96,6 @@ class PrincipalController extends AppController
         {
             if($empleado->sucursal_id==$usuario->sucursal_id  or $sucursal_empleado['sucursal_id']=$usuario->sucursal_id ) 
             { 
-                
                 $tolerancia=5; 
 
                 $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
@@ -144,17 +149,21 @@ class PrincipalController extends AppController
                 $checar->empleados_id = $id;
                 $checar->fecha = $fecha;
                 $checar->entrada = $hora_ent;
-                $checar->retardo = $retardo;
                 $checar->dia = $dia;
-                $checar->entrada_horario=$entrada_horario;
-                $checar->salida_horario=$salida_horario;
-                $checar->hrs_dia=$hrs_dia;
-                $checar->hrs_nomina=$hrs_nomina;
-                $checar->entrada_nomina=$entrada_nomina;
-                $checar->salida_nomina=$salida_nomina;
-                $checar->sucursal = $empleado->sucursal_id;
+                $checar->sucursal_id = $empleado->sucursal_id;
                 $checar->sucursal_checada_id=$usuario->sucursal_id;
 
+                if($sucursal_info->horario_libre==false)
+                {
+                    $checar->retardo = $retardo;
+                    $checar->entrada_horario=$entrada_horario;
+                    $checar->salida_horario=$salida_horario;
+                    $checar->hrs_dia=$hrs_dia;
+                    $checar->hrs_nomina=$hrs_nomina;
+                    $checar->entrada_nomina=$entrada_nomina;
+                    $checar->salida_nomina=$salida_nomina;
+                }
+                
                 $this->Checadas->save($checar);
 
                 $this->Flash->default("Se Checo exitosamente.");
@@ -164,20 +173,49 @@ class PrincipalController extends AppController
             else
             {
                 $this->Flash->default("El empleado no pertenece a esta sucursal.");
-                $this->redirect(['action' => 'inicio']); 
+                $this->redirect(['action' => 'inicio']);
             }
         }
         else
-        { 
+        {
             $registro = $this->Checadas->get($checada_existente->id);
 
-            $horas_trabajadas= Calcular($hora,$registro);
+            if($sucursal_info->horario_libre==false)
+            {
+                $horas_trabajadas= Calcular($hora,$registro);
+            }
+            else
+            {
+                $horas_trabajadas=CalcularHorasDia($hora,$registro->entrada->format("H:i"));
+            }
+
+            $hrs_finales=$registro->hrs_nomina-($registro->hrs_dia-$horas_trabajadas);
 
             $registro->salida = $hora;
             $registro->horas = $horas_trabajadas;
-            $registro->hrs_finales=$registro->hrs_nomina-($registro->hrs_dia-$horas_trabajadas);
+            $registro->hrs_finales=$hrs_finales;
 
             $this->Checadas->save($registro);
+
+            $registro_horas_checadas=$this->HorasChecadas->find()
+            ->where(['empleado_id'=>$registro->empleados_id,'fecha_inicio'=>$inicio_semana_actual,'fecha_termino'=>$termino_semana_actual])
+            ->first();
+
+            if($registro_horas_checadas==null)
+            {
+                $registro_horas_checadas = $this->HorasChecadas->newEntity();
+                $registro_horas_checadas->empleado_id=$registro->empleados_id;
+                $registro_horas_checadas->sucursal_id=$registro->sucursal_id;
+                $registro_horas_checadas->fecha_inicio=$inicio_semana_actual;
+                $registro_horas_checadas->fecha_termino=$termino_semana_actual;
+                $registro_horas_checadas->hrs_checadas=$hrs_finales;
+            }
+            else
+            {
+                $registro_horas_checadas->hrs_checadas=$registro_horas_checadas->hrs_checadas+$hrs_finales;
+            }
+
+            $this->HorasChecadas->save($registro_horas_checadas);
             
             $this->redirect(['action' => 'inicio']);
         }
