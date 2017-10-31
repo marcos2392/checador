@@ -227,7 +227,7 @@ class UsuariosController extends AppController
                     $checar->fecha = $fecha;
                     $checar->dia = $dia;
                     $checar->descanso=true;
-                    $checar->sucursal=$empleado->sucursal_id;
+                    $checar->sucursal_id=$empleado->sucursal_id;
 
                     $this->Checadas->save($checar);
                 }
@@ -264,7 +264,7 @@ class UsuariosController extends AppController
                     $checar->fecha = $fecha;
                     $checar->dia = $dia;
                     $checar->falta=true;
-                    $checar->sucursal=$empleado->sucursal_id;
+                    $checar->sucursal_id=$empleado->sucursal_id;
                     $checar->entrada_horario=$entrada;
                     $checar->salida_horario=$salida;
                     $checar->hrs_dia=$hrs_dia;

@@ -282,7 +282,7 @@ function Calcular($hora1,$registro){
     $entrada=$registro->entrada_horario->format("H:i");
     $salida_horario=explode(':',$registro->salida_horario->format("H:i"));
 
-    $minutos_horario_salida=$salida_horario[0]*60+$salida_horario[1]; 
+    $minutos_horario_salida=$salida_horario[0]*60+$salida_horario[1];
     $minutos_salida=$salida[0]*60+$salida[1];
 
     $hora_retardo=CalcularHorasDia($registro->entrada->format("H:i"),$registro->entrada_horario->format("H:i"));

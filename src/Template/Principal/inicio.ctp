@@ -63,7 +63,7 @@
     <div class="col-sm-8 col-sm-offset-2 ">
         <table  class="table table-striped">
                 <tr class="active">
-                    <th>Nombre completo</th>
+                    <th>Nombre</th>
                     <th>Sucursal</th>
                     <th>Entrada</th>
                     <th>Salida</th>
@@ -80,7 +80,7 @@
                         }
                         else
                         {
-                            $emp=$empleado->ncompleto;
+                            $emp=$empleado->nombre;
                             $id_dup=$empleado->id;
                         }
 
