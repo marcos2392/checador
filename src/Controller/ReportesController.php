@@ -46,13 +46,13 @@ class ReportesController extends AppController
         }
 
         if ($filtro == "semanal") {
-            $condicion = ["sucursal= '". $sucursal ."' and fecha between '" . $inicio . "' and '" . $fin . "'"];
+            $condicion = ["sucursal_id= '". $sucursal ."' and fecha between '" . $inicio . "' and '" . $fin . "'"];
         } 
         else 
         {
             $inicio = date('Y-m-d', $fechas['f1']);
             $fin = date('Y-m-d', $fechas['f2']);
-            $condicion = ["sucursal= '".$sucursal."' and fecha between '" . $inicio . "' and '" . $fin . "'"];
+            $condicion = ["sucursal_id= '".$sucursal."' and fecha between '" . $inicio . "' and '" . $fin . "'"];
         }
 
         if ($this->request->is('post')) {
