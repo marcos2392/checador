@@ -166,6 +166,22 @@ class PrincipalController extends AppController
                 
                 $this->Checadas->save($checar);
 
+                $horas_checadas=$this->HorasChecadas->find()
+                ->where(['empleado_id'=>$id,'fecha_inicio'=>$inicio_semana_actual])
+                ->first();
+
+                if($horas_checadas==null)
+                {
+                    $horas_checadas=$this->HorasChecadas->newEntity();
+
+                    $horas_checadas->empleado_id=$id;
+                    $horas_checadas->sucursal_id=$empleado->sucursal_id;
+                    $horas_checadas->fecha_inicio=$inicio_semana_actual;
+                    $horas_checadas->fecha_termino=$termino_semana_actual;
+
+                    $this->HorasChecadas->save($horas_checadas);
+                }
+                
                 $this->Flash->default("Se Checo exitosamente.");
                 $this->redirect(['action' => 'inicio']);
                 
@@ -214,7 +230,6 @@ class PrincipalController extends AppController
             else
             {
                 $registro_horas_checadas->hrs_checadas=$registro_horas_checadas->hrs_checadas+$hrs_finales;
-                $registro_horas_checadas->hrs_checadas=$registro_horas_checadas->hrs_editadas+$hrs_finales;
             }
 
             $this->HorasChecadas->save($registro_horas_checadas);
