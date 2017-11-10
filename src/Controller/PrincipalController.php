@@ -96,65 +96,56 @@ class PrincipalController extends AppController
         {
             if($empleado->sucursal_id==$usuario->sucursal_id  or $sucursal_empleado['sucursal_id']=$usuario->sucursal_id ) 
             { 
-                $tolerancia=5; 
-
-                $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
-                $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
-                $salida=$this->gethorario($empleado,"salida")->format("H:i");
-
-                $entrada_horario=$entrada;
-                $salida_horario=$salida;
-
-                $hrs_dia=CalcularHorasDia($salida_horario,$entrada_horario);
-                
-                $segundos_tolerancia=$tolerancia*60;
-                $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia);
-
-                $hora1 = strtotime($hora);
-                $hora_tolerancia = strtotime($hora_tolerancia);
-
-                if($hora1 > $hora_tolerancia): $retardo=true; endif;
-                $hora_ent=$hora;
-
-                $horarios_nomina=$this->HorariosNomina->find()
-                ->where(['entrada_real'=>$entrada_horario,'salida_real'=>$salida_horario])
-                ->first();
-
-                if($horarios_nomina!=null)
-                {  
-                    $entrada_nomina=$horarios_nomina->entrada_nomina->format("H:i");
-                    $salida_nomina=$horarios_nomina->salida_nomina->format("H:i");
-                }
-                else
-                {
-                    $entrada_nomina=$entrada_horario;
-                    $salida_nomina=$salida_horario;
-                }
-
-                $hrs_nomina=CalcularHorasDia($salida_nomina,$entrada_nomina);
-
-                if($hora1>$segundos_hora)
-                {   
-                    $hora=explode(':',$hora);
-
-                    $hora_retardo=CalcularHorasDia(date("H:i",$hora1),$entrada_horario);
-
-                    if($hora_retardo>.17)
-                    {
-                        $entrada_nomina=date("H:i",$hora1); 
-                    }
-                }
-                
                 $checar = $this->Checadas->newEntity();
-                $checar->empleados_id = $id;
-                $checar->fecha = $fecha;
-                $checar->entrada = $hora_ent;
-                $checar->dia = $dia;
-                $checar->sucursal_id = $empleado->sucursal_id;
-                $checar->sucursal_checada_id=$usuario->sucursal_id;
+                $tolerancia=5; 
 
                 if($sucursal_info->horario_libre==false)
                 {
+                    $segundos_hora=strtotime($this->gethorario($empleado,"entrada")->format("H:i"));
+                    $entrada=$this->gethorario($empleado,"entrada")->format("H:i");
+                    $salida=$this->gethorario($empleado,"salida")->format("H:i");
+
+                    $entrada_horario=$entrada;
+                    $salida_horario=$salida;
+
+                    $hrs_dia=CalcularHorasDia($salida_horario,$entrada_horario);
+                    
+                    $segundos_tolerancia=$tolerancia*60;
+                    $hora_tolerancia=date("H:i",$segundos_hora+$segundos_tolerancia);
+
+                    $hora1 = strtotime($hora);
+                    $hora_tolerancia = strtotime($hora_tolerancia);
+
+                    if($hora1 > $hora_tolerancia): $retardo=true; endif;
+                    $hora_ent=$hora;
+
+                    $horarios_nomina=$this->HorariosNomina->find()
+                    ->where(['entrada_real'=>$entrada_horario,'salida_real'=>$salida_horario])
+                    ->first();
+
+                    if($horarios_nomina!=null)
+                    {  
+                        $entrada_nomina=$horarios_nomina->entrada_nomina->format("H:i");
+                        $salida_nomina=$horarios_nomina->salida_nomina->format("H:i");
+                    }
+                    else
+                    {
+                        $entrada_nomina=$entrada_horario;
+                        $salida_nomina=$salida_horario;
+                    }
+
+                    $hrs_nomina=CalcularHorasDia($salida_nomina,$entrada_nomina);
+
+                    if($hora1>$segundos_hora)
+                    {   
+                        $hora_retardo=CalcularHorasDia(date("H:i",$hora1),$entrada_horario);
+
+                        if($hora_retardo>.17)
+                        {
+                            $entrada_nomina=date("H:i",$hora1); 
+                        }
+                    }
+
                     $checar->retardo = $retardo;
                     $checar->entrada_horario=$entrada_horario;
                     $checar->salida_horario=$salida_horario;
@@ -163,6 +154,13 @@ class PrincipalController extends AppController
                     $checar->entrada_nomina=$entrada_nomina;
                     $checar->salida_nomina=$salida_nomina;
                 }
+                
+                $checar->empleados_id = $id;
+                $checar->fecha = $fecha;
+                $checar->entrada = $hora;
+                $checar->dia = $dia;
+                $checar->sucursal_id = $empleado->sucursal_id;
+                $checar->sucursal_checada_id=$usuario->sucursal_id;
                 
                 $this->Checadas->save($checar);
 
