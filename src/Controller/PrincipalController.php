@@ -252,7 +252,7 @@ class PrincipalController extends AppController
         $checar->sucursal_checada_id = $usuario->sucursal_id;
         $checar->entrada = $hora_ent;
         $checar->entrada_horario = $hora_ent;
-        $checar->salida_horario=$checada_existente->salida_horario->format("H:i");
+        //$checar->salida_horario=$checada_existente->salida_horario->format("H:i");
         $checar->dia = $dia;
 
         $this->Checadas->save($checar);
